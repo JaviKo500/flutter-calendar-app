@@ -16,13 +16,17 @@ class _CalendarPageState extends State<CalendarPage> {
   List< Event > _events = [
     Event(title: 'Event 1', date: DateTime.utc(2025, 7, 16)),
     Event(title: 'Event 2', date: DateTime.utc(2025, 7, 17)),
+    Event(title: 'Event 2.5', date: DateTime.utc(2025, 7, 17)),
+    Event(title: 'Event 2.6', date: DateTime.utc(2025, 7, 17)),
     Event(title: 'Event 3', date: DateTime.utc(2025, 7, 18)),
     Event(title: 'Event 4', date: DateTime.utc(2025, 7, 19)),
     Event(title: 'Event 5', date: DateTime.utc(2025, 7, 20)),
   ];
 
+  List< Event > eventsSelected = [];
+
   List<Event> _getEventsForDay(DateTime day) {
-    List<Event> eventsForDay = <Event>[];
+    List< Event >  eventsForDay = [];
     for (Event event in _events) {
 
       final DateTime emitDate = event.date;
@@ -33,9 +37,7 @@ class _CalendarPageState extends State<CalendarPage> {
           date: emitDate,
         ));
       }
-      print(isSameDay(day, emitDate));
     }
-    print('eventsForDay: ${eventsForDay.length}');
     return eventsForDay;
   }
   @override
@@ -58,11 +60,9 @@ class _CalendarPageState extends State<CalendarPage> {
               if (!isSameDay(_selectedDate, selectedDay)) {
                 setState(() {
                   _selectedDate = selectedDay;
+                  eventsSelected = _getEventsForDay(selectedDay);
                 });
               }
-              setState(() {
-                _selectedDate = selectedDay;
-              });
             },
             onPageChanged: (focusedDay) {
               print('focusedDay: $focusedDay');
@@ -98,7 +98,23 @@ class _CalendarPageState extends State<CalendarPage> {
                 );
               },
             ),
-          )
+          ),
+          const SizedBox(height: 20),
+          ...eventsSelected.map((event) => Card(
+            margin: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(event.title),
+                  ),
+                ],
+              ),
+            ),
+          )).toList(),
         ],
       ),
     );
